@@ -5,7 +5,6 @@ import { RootState } from "../..";
 
 export interface TodoState {
   todos: Todo[];
-  todo: null | Todo;
 }
 
 const getTodosFromLS = () => {
@@ -21,7 +20,6 @@ const ModuleOfTodo: Module<TodoState, RootState> = {
   namespaced: true,
   state: {
     todos: [],
-    todo: null,
   },
   mutations: {
     updateTodo(state, { id, title }: { id: string; title: string }) {
