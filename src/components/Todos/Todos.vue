@@ -10,9 +10,16 @@
           placeholder="title"
         />
       </div>
-      <div>
-        <button @click="addTodo()" class="btn btn-primary">Submit</button>
-      </div>
+      <button
+        v-if="title.trim() !== ''"
+        @click="addTodo()"
+        class="btn btn-primary"
+      >
+        Submit
+      </button>
+      <button v-else @click="addTodo()" class="btn btn-primary disabled">
+        Submit
+      </button>
     </div>
     <div v-for="todo in todos" :key="todo.id">
       <TodoItem :todo="todo" />
@@ -21,26 +28,26 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, ref } from "vue";
+import { computed, defineComponent, onMounted, ref } from "vue";
 import { useStore } from "../../store";
 import { Todo } from "../../types/Todo";
 import TodoItem from "./TodoItem.vue";
 export default defineComponent({
   name: "Todos",
   components: { TodoItem },
-  mounted() {
-    const store = useStore();
-    store.getters["todos/getTodos"];
-  },
   setup() {
     const title = ref("");
     const store = useStore();
     const { dispatch, state } = store;
+    onMounted(() => {
+      store.getters["todos/getTodos"];
+    });
     const addTodo = () => {
       dispatch("todos/addTodo", title.value);
       title.value = "";
     };
     const todos = computed<Todo[]>(() => state.todos.todos);
+
     return { addTodo, todos, title };
   },
 });

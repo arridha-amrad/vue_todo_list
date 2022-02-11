@@ -5,7 +5,7 @@
         <div class="d-flex w-100 justify-content-between">
           <div v-if="todo.isEdit">
             <input
-              v-model="title"
+              v-model="myTitle"
               type="text"
               placeholder="todo title"
               class="form-control"
@@ -16,7 +16,7 @@
           </div>
           <div v-if="todo.isEdit" class="d-flex gap-2">
             <button
-              @click="updateTodo(todo.id, title)"
+              @click="updateTodo(todo.id, myTitle)"
               class="d-block btn btn-primary"
             >
               Update
@@ -64,28 +64,26 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType } from "vue";
+import { defineComponent, PropType, ref, watch } from "vue";
 import { useStore } from "../../store";
 import { Todo } from "../../types/Todo";
 export default defineComponent({
   name: "Todo Item",
-  data() {
-    return {
-      title: "",
-    };
-  },
   props: {
     todo: {
       required: true,
       type: Object as PropType<Todo>,
     },
   },
-  methods: {
-    setTitle(title: string) {
-      this.title = title;
-    },
-  },
   setup() {
+    const myTitle = ref("");
+    const setTitle = (currentTitle: string) => {
+      myTitle.value = currentTitle;
+    };
+    watch(myTitle, (newValue, oldValue) => {
+      console.log("oldValue title : ", oldValue);
+      console.log("newValue title : ", newValue);
+    });
     const { dispatch } = useStore();
     const deleteTodo = (id: string) => {
       dispatch("todos/deleteTodo", id);
@@ -99,7 +97,14 @@ export default defineComponent({
     function updateTodo(id: string, title: string) {
       dispatch("todos/updateTodo", { id, title });
     }
-    return { deleteTodo, setComplete, toggleIsEdit, updateTodo };
+    return {
+      myTitle,
+      setTitle,
+      deleteTodo,
+      setComplete,
+      toggleIsEdit,
+      updateTodo,
+    };
   },
 });
 </script>
